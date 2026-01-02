@@ -6,5 +6,9 @@ spring:
     password: root
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     show-sql: true
+app:
+  jwt:
+    secret: "ReplaceWithAStrongSecretKeyForJwtDemo1234567890"
+    expireHours: 12

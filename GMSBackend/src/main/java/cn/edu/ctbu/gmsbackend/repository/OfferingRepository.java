@@ -17,4 +17,7 @@ public interface OfferingRepository extends JpaRepository<Offering, Long> {
     List<Offering> searchByTermAndKeyword(String term, String keyword);
 
     List<Offering> findByTerm(String term);
+
+    @Query("select distinct o.term from Offering o order by o.term desc")
+    List<String> findDistinctTerms();
 }

@@ -150,8 +150,8 @@ public class AdminController {
     }
 
     @PostMapping("/password-resets/{id}/handle")
-    public ApiResponse<Void> handleReset(@PathVariable Long id, @Valid @RequestBody PasswordResetHandleRequest request) {
-        adminService.handlePasswordReset(id, request.getNewPassword(), currentAdminId());
+    public ApiResponse<Void> handleReset(@PathVariable Long id) {
+        adminService.handlePasswordReset(id, currentAdminId());
         return ApiResponse.ok();
     }
 }

@@ -19,16 +19,10 @@ const load = async () => {
 onMounted(load);
 
 const handle = async (row: PasswordResetItem) => {
-  await ElMessageBox.prompt("输入新密码", "重置密码", {
-    confirmButtonText: "确认",
-    cancelButtonText: "取消",
-  })
-    .then(async ({ value }) => {
-      await passwordResets.handle(row.id, value);
-      ElMessage.success("操作成功");
-      await load();
-    })
-    .catch(() => {});
+  await ElMessageBox.confirm("确认将密码重置为 123456？", "重置密码");
+  await passwordResets.handle(row.id);
+  ElMessage.success("已重置为默认密码 123456");
+  await load();
 };
 </script>
 

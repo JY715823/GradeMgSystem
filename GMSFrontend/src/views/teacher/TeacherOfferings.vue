@@ -2,14 +2,23 @@
 import { onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { fetchTeacherOfferings } from "@/api/teacher";
+import { fetchTerms } from "@/api/common";
 import type { TeacherOffering } from "@/types/offering";
 
 const router = useRouter();
 const list = ref<TeacherOffering[]>([]);
 const loading = ref(false);
+const termOptions = ref<string[]>([]);
 const filters = reactive({
   term: "",
 });
+
+const loadTerms = async () => {
+  termOptions.value = await fetchTerms();
+  if (!filters.term && termOptions.value.length > 0) {
+    filters.term = termOptions.value[0] || "";
+  }
+};
 
 const load = async () => {
   loading.value = true;
@@ -20,7 +29,10 @@ const load = async () => {
   }
 };
 
-onMounted(load);
+onMounted(async () => {
+  await loadTerms();
+  await load();
+});
 
 const goDetail = (id: number) => router.push(`/teacher/offering/${id}`);
 </script>
@@ -29,7 +41,9 @@ const goDetail = (id: number) => router.push(`/teacher/offering/${id}`);
   <div class="card">
     <h2 class="page-title">我的课程</h2>
     <div style="margin-bottom: 12px">
-      <el-input v-model="filters.term" placeholder="学期" style="width: 240px; margin-right: 12px" />
+      <el-select v-model="filters.term" placeholder="选择学期" style="width: 240px; margin-right: 12px" clearable>
+        <el-option v-for="term in termOptions" :key="term" :label="term" :value="term" />
+      </el-select>
       <el-button type="primary" @click="load">查询</el-button>
     </div>
     <el-table :data="list" stripe v-loading="loading">

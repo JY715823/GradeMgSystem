@@ -224,14 +224,14 @@ public class AdminService {
     }
 
     @Transactional
-    public void handlePasswordReset(Long id, String newPassword, Long adminUserId) {
+    public void handlePasswordReset(Long id, Long adminUserId) {
         PasswordResetRequest request = passwordResetRequestRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(4040, "申请不存在"));
         UserRole role = request.getRole();
         String username = request.getUsername();
         UserAccount account = userAccountRepository.findByUsernameAndRole(username, role)
                 .orElseThrow(() -> new BusinessException(4040, "账号不存在"));
-        authService.resetPassword(account, newPassword);
+        authService.resetPassword(account, DEFAULT_PASSWORD);
         request.setStatus("DONE");
         request.setHandledAt(java.time.Instant.now());
         request.setHandledBy(adminUserId);
@@ -240,6 +240,8 @@ public class AdminService {
 
     @Transactional
     public PasswordResetRequest createPasswordResetRequest(UserRole role, String username, String name, String remark) {
+        userAccountRepository.findByUsernameAndRole(username, role)
+                .orElseThrow(() -> new BusinessException(4040, "账号不存在"));
         PasswordResetRequest request = new PasswordResetRequest();
         request.setRole(role);
         request.setUsername(username);

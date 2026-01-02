@@ -12,7 +12,6 @@ const auth = useAuthStore();
 const menus = computed(() => {
   const base = [
     { path: "/home", label: "首页" },
-    { path: "/profile", label: "个人中心" },
   ];
   if (auth.role === "STUDENT") {
     return [

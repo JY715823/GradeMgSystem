@@ -1,15 +1,24 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
 import { fetchOfferings, enrollCourse, dropCourse } from "@/api/student";
+import { fetchTerms } from "@/api/common";
 import type { Offering } from "@/types/offering";
 import { ElMessageBox, ElMessage } from "element-plus";
 
 const loading = ref(false);
 const offerings = ref<Offering[]>([]);
+const termOptions = ref<string[]>([]);
 const filters = reactive({
   term: "",
   keyword: "",
 });
+
+const loadTerms = async () => {
+  termOptions.value = await fetchTerms();
+  if (!filters.term && termOptions.value.length > 0) {
+    filters.term = termOptions.value[0] || "";
+  }
+};
 
 const load = async () => {
   loading.value = true;
@@ -20,7 +29,10 @@ const load = async () => {
   }
 };
 
-onMounted(load);
+onMounted(async () => {
+  await loadTerms();
+  await load();
+});
 
 const onEnroll = async (offering: Offering) => {
   await enrollCourse(offering.id);
@@ -40,7 +52,10 @@ const onDrop = async (offering: Offering) => {
   <div class="card">
     <h2 class="page-title">选课</h2>
     <div style="margin-bottom: 12px; display: flex; gap: 12px">
-      <el-input v-model="filters.term" placeholder="学期（如 2025-2026-1）" style="width: 240px" />
+      <el-select v-model="filters.term" placeholder="选择学期" style="width: 240px" clearable>
+        <el-option label="全部" value="" />
+        <el-option v-for="term in termOptions" :key="term" :label="term" :value="term" />
+      </el-select>
       <el-input v-model="filters.keyword" placeholder="课程名/教师" style="width: 240px" />
       <el-button type="primary" @click="load">查询</el-button>
     </div>

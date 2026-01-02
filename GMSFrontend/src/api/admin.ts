@@ -54,8 +54,7 @@ export interface PasswordResetItem {
 
 export const passwordResets = {
   list: (status = "PENDING") => http.get<PasswordResetItem[]>("/admin/password-resets", { params: { status } }),
-  handle: (id: number, newPassword: string) =>
-    http.post<void>(`/admin/password-resets/${id}/handle`, { newPassword }),
+  handle: (id: number) => http.post<void>(`/admin/password-resets/${id}/handle`),
 };
 
 export const passwordResetRequest = (payload: { role: string; username: string; name: string; remark?: string }) =>

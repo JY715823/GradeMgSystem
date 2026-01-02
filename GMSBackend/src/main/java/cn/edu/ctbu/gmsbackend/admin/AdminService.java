@@ -67,7 +67,7 @@ public class AdminService {
         Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(4040, "学生不存在"));
         UserAccount account = userAccountRepository.findByUsernameAndRole(student.getStudentNo(), UserRole.STUDENT)
-                .orElseThrow(() -> new BusinessException(4040, "账号不存在"));
+                .orElseGet(() -> authService.createUser(student.getStudentNo(), UserRole.STUDENT, "STUDENT", student.getId(), DEFAULT_PASSWORD));
         authService.resetPassword(account, DEFAULT_PASSWORD);
     }
 
@@ -113,7 +113,7 @@ public class AdminService {
         Teacher teacher = teacherRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(4040, "教师不存在"));
         UserAccount account = userAccountRepository.findByUsernameAndRole(teacher.getTeacherNo(), UserRole.TEACHER)
-                .orElseThrow(() -> new BusinessException(4040, "账号不存在"));
+                .orElseGet(() -> authService.createUser(teacher.getTeacherNo(), UserRole.TEACHER, "TEACHER", teacher.getId(), DEFAULT_PASSWORD));
         authService.resetPassword(account, DEFAULT_PASSWORD);
     }
 
